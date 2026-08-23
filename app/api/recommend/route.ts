@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import {
   RecommendationRequestSchema,
   parseModelResponse,
@@ -34,11 +34,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    // Fails safely and loudly in server logs; never leaks the missing-key
-    // detail to the client beyond a generic message.
-    console.error("ANTHROPIC_API_KEY is not set in the environment.");
+    console.error("OPENAI_API_KEY is not set in the environment.");
     return NextResponse.json(
       {
         error: "SERVER_MISCONFIGURED",
@@ -48,24 +46,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const anthropic = new Anthropic({ apiKey });
+  const openai = new OpenAI({ apiKey });
 
   try {
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
       max_tokens: MAX_OUTPUT_TOKENS,
-      system: SYSTEM_PROMPT,
+      response_format: { type: "json_object" },
       messages: [
+        { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: buildUserPrompt(parsedInput.data) },
       ],
     });
 
-    const textBlock = message.content.find((b) => b.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
+    const text = completion.choices[0]?.message?.content;
+    if (!text) {
       throw new Error("MODEL_RESPONSE_EMPTY");
     }
 
-    const recommendation = parseModelResponse(textBlock.text);
+    const recommendation = parseModelResponse(text);
     return NextResponse.json({ data: recommendation }, { status: 200 });
   } catch (err) {
     const reason =
@@ -82,7 +81,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.error("Anthropic API call failed:", reason);
+    console.error("OpenAI API call failed:", reason);
     return NextResponse.json(
       {
         error: "MODEL_REQUEST_FAILED",
