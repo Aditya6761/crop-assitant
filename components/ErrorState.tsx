@@ -11,7 +11,7 @@ export default function ErrorState({
       className="space-y-3 rounded-lg border border-alert/30 bg-alert/5 p-5"
       data-testid="error-state"
     >
-      <p className="font-semibold text-alert">Couldn't get recommendations</p>
+      <p className="font-semibold text-alert">Couldn&apos;t get recommendations</p>
       <p className="text-sm text-soil-700">{message}</p>
       <p className="text-sm text-soil-600">
         In the meantime: crops suited to your season and water access are
