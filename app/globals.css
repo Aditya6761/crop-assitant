@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: #12220c;
+  color: #f6f3ee;
+  font-family: theme("fontFamily.body");
+  font-weight: 600;
+  border-radius: 0 0 0.5rem 0;
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/* Consistent, highly visible focus ring across all interactive elements */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #d9a441;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@layer components {
+  .field-label {
+    @apply block text-sm font-semibold text-soil-800 mb-1;
+  }
+  .field-input {
+    @apply w-full rounded-md border border-soil-200 bg-white px-3 py-2 text-soil-900 placeholder:text-soil-300 focus:border-leaf-500;
+  }
+  .field-error {
+    @apply mt-1 text-sm text-alert;
+  }
+  .submit-button {
+    @apply w-full sm:w-auto inline-flex items-center justify-center rounded-md bg-leaf-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-leaf-700 disabled:cursor-not-allowed disabled:bg-soil-300;
+  }
+}
